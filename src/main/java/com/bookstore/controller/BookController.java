@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bookstore.dto.BookDTO;
 import com.bookstore.exception.BookAlreadyExistsException;
 import com.bookstore.exception.BookNotFoundException;
 import com.bookstore.model.Book;
@@ -27,6 +29,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/books")
+@CrossOrigin("http://localhost:3000/")
 public class BookController {
 
 	@Autowired
@@ -37,15 +40,15 @@ public class BookController {
 
 	@PostMapping("/addBook")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public String addBook(@RequestBody @Valid Book book) {
+	public String addBook(@RequestBody @Valid BookDTO bookDTO) {
 		
-		Optional<Book> existingBook = bookRepository.findById(book.getBookId());
+		Optional<Book> existingBook = bookRepository.findById(bookDTO.getBookId());
 		
 		if(existingBook.isPresent()) {
-			throw new BookAlreadyExistsException(book.getBookId());
+			throw new BookAlreadyExistsException(bookDTO.getBookId());
 		}
 
-		Book savedBook =  bookDAOWrapper.addBook(book);
+		Book savedBook =  bookDAOWrapper.addBook(bookDTO);
 		
 		return "Book added successfully with id: "+savedBook.getBookId();
 	

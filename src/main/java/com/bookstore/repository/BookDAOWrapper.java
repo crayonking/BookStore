@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import com.bookstore.dto.BookDTO;
 import com.bookstore.exception.BookAlreadyExistsException;
 import com.bookstore.model.Book;
 
@@ -20,14 +21,14 @@ public class BookDAOWrapper {
 	@Autowired
 	private BookRepository bookRepository;
 	
-	public Book addBook(Book book) {
+	public Book addBook(BookDTO bookdto) {
 		
-		
+		Book book = new Book(bookdto.getBookId(),bookdto.getTitle(),bookdto.getAuthor(),bookdto.getPublication(),bookdto.getYear());
 		
 		return bookRepository.save(book);
 	}
 	
-	@Cacheable(value = "cache")
+//	@Cacheable(value = "cache")
 	public List<Book> getAllBooks() {
 		return bookRepository.findAll();
 	}

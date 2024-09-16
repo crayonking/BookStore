@@ -25,14 +25,14 @@ public class Book {
 	
 	private String title;
 	 
-	 @NotBlank(message = "Name is mandatory")
+	 
 	private String author;
 	
-	 @NotBlank(message = "Name is mandatory")
+	
 	private String publication;
 	
-	@Range(min = 1900,  max =2024)
-	private Long Year;
+	
+	private long Year;
 	
 
 }

@@ -8,12 +8,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Configuration
 public class GlobalExceptionHandler {
 	
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler {
 		
 //		logger.info(HttpStatus.BAD_REQUEST.toString().substring(0,3));
 		
-		error.put("errorCode", HttpStatus.BAD_REQUEST.toString().substring(0,3));
+		error.put("errorCode", "svc_"+HttpStatus.BAD_REQUEST.toString().substring(0,3));
 		error.put("errorMessage", bookNotFoundException.getMessage());
 		
 		
@@ -41,10 +43,24 @@ public class GlobalExceptionHandler {
 	public Map<String, String> bookExistsException(BookAlreadyExistsException bookAlreadyExistsException) {
 		 Map<String, String> error = new HashMap<>();
 		 
-		 error.put("errorCode", HttpStatus.CONFLICT.toString().substring(0,3));
+		 error.put("errorCode", "itf_"+HttpStatus.CONFLICT.toString().substring(0,3));
 		 error.put("errorMessage", bookAlreadyExistsException.getMessage());
 		 
 		 return error;
+	}
+	
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	public Map<String, String> handleValidation(MethodArgumentNotValidException ex) {
+		
+		Map<String, String> validationerror = new HashMap<>();
+		
+		ex.getBindingResult().getFieldErrors().forEach(error ->
+		validationerror.put(error.getField(), error.getDefaultMessage())
+		);
+		
+		return validationerror;
 	}
 
 }
